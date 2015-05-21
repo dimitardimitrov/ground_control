@@ -1,0 +1,13 @@
+# Settings file for ground control
+# Access information
+username=
+hostname=
+
+# Conection Ports
+local=
+remote=
+
+#SSH Keys
+
+
+#Network definitions

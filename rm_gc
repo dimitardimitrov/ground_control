@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# Load configuration from file if available
+file=${HOME}/.ctrlconf
+if ! [ -f ${file} ]; 
+then 
+	echo "Configuration file ~/.ctrlconf missing. Please create the file."
+	exit
+fi
+
+# to make things easier we are using source
+source ${file}
+
+# Start a connection to rm
+# Options:
+# -l -- from the local network
+# -r -- from the remote network
+
+options=$1
+if [[ "${options//-}" == "r" ]]; 
+then
+  ssh ${username}@${hostname} -p ${remote}
+elif [[ "${options//-}" == "l" ]]; 
+then
+  ssh ${username}@${hostname} -p ${local}
+else 
+# If we don't pass an option the default is local
+  ssh ${username}@${hostname} -p ${local}
+fi
