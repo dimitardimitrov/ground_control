@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Load configuration from file if available
+# load configuration from file if available
 file=${HOME}/.ctrlconf
 if ! [ -f ${file} ]; 
 then 
@@ -11,19 +11,35 @@ fi
 # to make things easier we are using source
 source ${file}
 
-# Start a connection to rm
-# Options:
+# check for key parameters
+if [ -z ${username} ] || [ -z ${hostname} ] \
+  || [ -z ${local} ] || [ -z ${remote} ];
+then
+  echo "Missing username, hostname, or port setting in ${file}"
+  exit
+fi
+
+# start a connection to rm
+# options:
 # -l -- from the local network
 # -r -- from the remote network
 
 options=$1
-if [[ "${options//-}" == "r" ]]; 
+if [[ "${options//-}" == "l" ]];
 then
-  ssh ${username}@${hostname} -p ${remote}
-elif [[ "${options//-}" == "l" ]]; 
+  ssh ${username}@${hostname} -p ${local} ! [ -z ${key} ] && echo "-i ${key}"
+elif [[ "${options//-}" == "r" ]];
 then
-  ssh ${username}@${hostname} -p ${local}
+  ssh ${username}@${hostname} -p ${remote} ! [ -z ${key} ] && echo "-i ${key}"
 else 
-# If we don't pass an option the default is local
+# If we don't pass an option the default
+# the script will try to find out the correct
+# setting based on our IP address
+
+#echo 192.168.1.2 | cut -d"." -f1-3
+#ip=ifconfig | grep inet | grep -v inet6 | awk '{print $2}' 
+ # echo ${ip}
+  #exit
   ssh ${username}@${hostname} -p ${local}
+
 fi
