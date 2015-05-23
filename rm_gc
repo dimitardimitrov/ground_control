@@ -1,15 +1,41 @@
 #!/bin/bash
 
+# Ground Control
+# Version: 0.1
+# Description: Ground Control is simple connection selector.
+
+# options:
+# -l -- from the local network
+# -r -- from the remote network
+help="You can pass the following options to the command:
+  [-l] -- from the local network
+  Example: rm_gc -l
+  [-r] -- from the remote network
+  Example: rm_gc -r
+  [-h] -- for help 
+  Example: rm_gc -h
+"
+
+# accept user options
+options=$1
+
 # load configuration from file if available
 file=${HOME}/.ctrlconf
 if ! [ -f ${file} ]; 
 then 
-	echo "Configuration file ~/.ctrlconf missing. Please create the file."
-	exit
+  echo "Configuration file ~/.ctrlconf missing. Please create the file."
+  exit
 fi
 
 # to make things easier we are using source
 source ${file}
+
+# check if the user wants to see the help prompt
+if [[ "${options//-}" == "h" ]];
+then
+  #printf "${help}"
+  exit
+fi
 
 # check for key parameters
 if [ -z ${username} ] || [ -z ${hostname} ] \
@@ -19,27 +45,23 @@ then
   exit
 fi
 
-# start a connection to rm
-# options:
-# -l -- from the local network
-# -r -- from the remote network
+# connection decisions
 
-options=$1
-if [[ "${options//-}" == "l" ]];
-then
-  ssh ${username}@${hostname} -p ${local} ! [ -z ${key} ] && echo "-i ${key}"
-elif [[ "${options//-}" == "r" ]];
-then
-  ssh ${username}@${hostname} -p ${remote} ! [ -z ${key} ] && echo "-i ${key}"
-else 
 # If we don't pass an option the default
 # the script will try to find out the correct
 # setting based on our IP address
+ip=$(/usr/bin/dig +short myip.opendns.com @resolver1.opendns.com)
 
-#echo 192.168.1.2 | cut -d"." -f1-3
-#ip=ifconfig | grep inet | grep -v inet6 | awk '{print $2}' 
- # echo ${ip}
-  #exit
-  ssh ${username}@${hostname} -p ${local}
+# check if ssh key is set
+! [ -z $key ] && ssh_key="-i ${key}"
 
+if [[ "${options//-}" == "l"  ||  "$ip" == "$office" ]];
+then
+  ssh ${username}@${hostname} -p ${local} ${ssh_key}
+elif [[ "${options//-}" == "r" ]];
+then
+  ssh ${username}@${hostname} -p ${remote} ${ssh_key}
+else 
+  printf "${help}"
+  exit
 fi
