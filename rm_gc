@@ -53,6 +53,7 @@ fi
 ip=$(/usr/bin/dig +short myip.opendns.com @resolver1.opendns.com)
 
 # check if ssh key is set
+# this only works if the permissions on the key are correct
 ! [ -z $key ] && ssh_key="-i ${key}"
 
 if [[ "${options//-}" == "l"  ||  "$ip" == "$office" ]];
