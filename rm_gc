@@ -59,7 +59,7 @@ ip=$(/usr/bin/dig +short myip.opendns.com @resolver1.opendns.com)
 if [[ "${options//-}" == "l"  ||  "$ip" == "$office" ]];
 then
   ssh ${username}@${hostname} -p ${local} ${ssh_key}
-elif [[ "${options//-}" == "r" ]];
+elif [[ "${options//-}" == "r" ||  "$ip" != "$office" ]];
 then
   ssh ${username}@${hostname} -p ${remote} ${ssh_key}
 else 
