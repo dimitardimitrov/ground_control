@@ -1,8 +1,27 @@
 #!/bin/bash
 
 # Ground Control
-# Version: 0.1
-# Description: Ground Control is simple connection selector.
+# Version: 0.2
+# Description: Ground Control is a simple connection selector.
+
+# load configuration from file if available
+file=${HOME}/.ctrlconf
+if ! [ -f ${file} ];
+then
+  echo "Configuration file ~/.ctrlconf missing. Please create the file."
+  exit
+fi
+
+# to make things easier we are using source
+source ${file}
+
+# check for key parameters
+if [ -z ${username} ] || [ -z ${hostname} ] \
+  || [ -z ${local} ] || [ -z ${remote} ];
+then
+  echo "Missing username, hostname, or port setting in ${file}"
+  exit
+fi
 
 # options:
 # -l -- from the local network
@@ -19,49 +38,41 @@ help="You can pass the following options to the command:
 # accept user options
 options=$1
 
-# load configuration from file if available
-file=${HOME}/.ctrlconf
-if ! [ -f ${file} ]; 
-then 
-  echo "Configuration file ~/.ctrlconf missing. Please create the file."
-  exit
-fi
-
-# to make things easier we are using source
-source ${file}
-
-# check if the user wants to see the help prompt
+# allows the user to override the IP check 
 if [[ "${options//-}" == "h" ]];
 then
-  #printf "${help}"
+  printf "${help}"
   exit
-fi
-
-# check for key parameters
-if [ -z ${username} ] || [ -z ${hostname} ] \
-  || [ -z ${local} ] || [ -z ${remote} ];
+elif [[ "${options//-}" == "l" ]];
 then
-  echo "Missing username, hostname, or port setting in ${file}"
+  ssh ${username}@${hostname} -p ${local} ${ssh_key}
+  exit
+elif [[ "${options//-}" == "r" ]];
+then
+  ssh ${username}@${hostname} -p ${remote} ${ssh_key}
   exit
 fi
 
 # connection decisions
 
-# If we don't pass an option the default
+# If we don't pass an option
 # the script will try to find out the correct
-# setting based on our IP address
+# setting based on our IP address and the
+# settings in .ctrlconf configuration file
 ip=$(/usr/bin/dig +short myip.opendns.com @resolver1.opendns.com)
 
 # check if ssh key is set
 # this only works if the permissions on the key are correct
 ! [ -z $key ] && ssh_key="-i ${key}"
 
-if [[ "${options//-}" == "l"  ||  "$ip" == "$office" ]];
+if [[ "$ip" == "$office" ]];
 then
   ssh ${username}@${hostname} -p ${local} ${ssh_key}
-elif [[ "${options//-}" == "r" ||  "$ip" != "$office" ]];
+  exit
+elif [[ "$ip" != "$office" ]];
 then
   ssh ${username}@${hostname} -p ${remote} ${ssh_key}
+  exit
 else 
   printf "${help}"
   exit
