@@ -14,7 +14,8 @@ the what the current IP address is and comparing it to the settings.
 ## Sameple Settings file:
 
 This information comes from your usual SSH connecton string.
-Example: ssh foobar@foo.bar.com -p 22
+
+**Example: ssh foobar@foo.bar.com -p 22**
 
 The file would look something like this.
 
