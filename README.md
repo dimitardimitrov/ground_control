@@ -11,14 +11,14 @@ based on a settings file. It dynamically changes those by verifying
 the what the current IP address is and comparing it to the settings.
 
 
-## Sameple Settings file:
+## Sample Settings file:
 
 This information comes from your usual SSH connecton string.
 
 **Example: ssh foobar@foo.bar.com -p 22**
 
 The file would look something like this.
-
+```sh
 username=foobar
 hostname=foo.bar.com
 
@@ -28,3 +28,4 @@ remote=60022
 key=
 
 office=226.233.236.128
+```
