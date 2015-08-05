@@ -8,7 +8,7 @@ The script was created for personal use, so use it at your own risk.
 The purpose of this wrapper is to autoselect the connection string
 required for an SSH connection as well as the correct keys and ports
 based on a settings file. It dynamically changes those by verifying
-the what the current IP address is and comparing it to the settings.
+what the current IP address is and comparing it to the settings.
 
 
 ## Sample Settings file:
